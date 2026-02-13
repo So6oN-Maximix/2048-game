@@ -84,7 +84,7 @@ function transpose(grille) {
 function movementColumn(keyPressed, simpleGrid) {
     let newGridTranspose;
     let newGrid;
-    const simpleGridTranspose = transpose(simpleGrid)
+    const simpleGridTranspose = transpose(simpleGrid);
     if (keyPressed == "ArrowDown") {
         newGridTranspose = movementRow("ArrowRight", simpleGridTranspose);
     } else if (keyPressed == "ArrowUp") {
