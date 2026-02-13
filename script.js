@@ -1,7 +1,8 @@
 const grid = Array.from(document.querySelectorAll("#grid-element"));
 const newGameButton = document.querySelector(".new-game");
 const fenetre = document.querySelector("body");
-const score = document.querySelector(".score");
+const scoreSpan = document.querySelector(".score");
+let score = 0;
 
 function getRandomStart() {
     const rndRow1 = Math.floor(Math.random() * 4);
@@ -24,6 +25,7 @@ function getRandomStart() {
             grid[i].innerText = "";
         }
     }
+    scoreSpan.textContent = 0;
 }
 
 function simplifiedGrid() {
@@ -35,32 +37,6 @@ function simplifiedGrid() {
         newGrid[Math.floor(i/4)].push(nbr);
     }
     return newGrid
-}
-
-function movementRow2(keyPressed, simpleGrid) {
-    let newGrid = [];
-    for (let i=0; i<=3; i++) {
-        let rowFiltered = simpleGrid[i].filter(num => num > 0);
-        for (let j=0; j<rowFiltered.length-1; j++) {
-            if (rowFiltered[j] == rowFiltered[j+1]) {
-                rowFiltered[j] *= 2;
-                rowFiltered[j+1] = 0;
-            }
-        }
-        rowFiltered = rowFiltered.filter(num => num > 0);
-        if (keyPressed == "ArrowLeft") {
-            while (rowFiltered.length < 4) {
-                rowFiltered.push(0);
-            }
-        } else if (keyPressed == "ArrowRight") {
-            rowFiltered.reverse();
-            while (rowFiltered.length < 4) {
-                rowFiltered.unshift(0);
-            }
-        }
-        newGrid.push(rowFiltered);
-    }
-    return newGrid;
 }
 
 function movementRow(keyPressed, simpleGrid) {
@@ -75,6 +51,7 @@ function movementRow(keyPressed, simpleGrid) {
             if (rowFiltered[j] === rowFiltered[j+1]) {
                 rowFiltered[j] *= 2;
                 score += rowFiltered[j];
+                scoreSpan.textContent = score;
                 rowFiltered[j+1] = 0;
             }
         }
@@ -85,7 +62,6 @@ function movementRow(keyPressed, simpleGrid) {
         if (keyPressed === "ArrowRight") {
             rowFiltered.reverse();
         }
-
         newGrid.push(rowFiltered);
     }
     return newGrid;
