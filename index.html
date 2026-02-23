@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>2048</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+    <body>
+        <div class="container">
+            <header>
+                <div class="account-bar">
+                    <a href="/login" class="auth-btn">Login</a>
+                    <a href="/create-account" class="auth-btn">Create Account</a>
+                </div>
+                <div class="game-header">
+                    <h1>2048</h1>
+                    <div class="score-board">
+                        <div class="score-box">SCORE : <span class="score">0</span></div>
+                        <button class="new-game">Nouveau Jeu</button>
+                    </div>
+                </div>
+            </header>
+
+            <div class="grid-container">
+                <!-- ROW 1 -->
+                <div class="tile empty" id="grid-element"></div>
+                <div class="tile empty" id="grid-element"></div>
+                <div class="tile empty" id="grid-element"></div>
+                <div class="tile empty" id="grid-element"></div>
+                <!-- ROW 2 -->
+                <div class="tile empty" id="grid-element"></div>
+                <div class="tile empty" id="grid-element"></div>
+                <div class="tile empty" id="grid-element"></div>
+                <div class="tile empty" id="grid-element"></div>
+                <!-- ROW 3 -->
+                <div class="tile empty" id="grid-element"></div>
+                <div class="tile empty" id="grid-element"></div>
+                <div class="tile empty" id="grid-element"></div>
+                <div class="tile empty" id="grid-element"></div>
+                <!-- ROW 4 -->
+                <div class="tile empty" id="grid-element"></div>
+                <div class="tile empty" id="grid-element"></div>
+                <div class="tile empty" id="grid-element"></div>
+                <div class="tile empty" id="grid-element"></div>
+            </div>
+        </div>
+    </body>
+    <script src="script.js"></script>
+</html>

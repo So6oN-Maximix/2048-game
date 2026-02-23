@@ -7,7 +7,7 @@ const PORT = 8080;
 const server = http.createServer((req, res) => {
     let filePath = "." + req.url;
     if (req.url === "/" || req.url === "") {
-        filePath = "./main.html";
+        filePath = "./index.html";
     } else if (req.url === "/login") {
         filePath = "./login.html";
     } else if (req.url === "/create-account") {
