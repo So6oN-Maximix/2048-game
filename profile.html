@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Mon Profil - 2048</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Petit ajout spécifique pour le profil */
+        .profile-container { max-width: 600px; margin: 50px auto; background: #bbada0; padding: 20px; border-radius: 6px; color: #776e65; }
+        .profile-card { background: #eee4da; padding: 20px; border-radius: 6px; }
+        .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+        .stat-box { background: #bbada0; color: white; padding: 15px; border-radius: 3px; text-align: center; }
+        .stat-value { display: block; font-size: 24px; font-weight: bold; }
+        .history-table { width: 100%; margin-top: 20px; border-collapse: collapse; background: white; border-radius: 3px; overflow: hidden; }
+        .history-table th, .history-table td { padding: 10px; text-align: left; border-bottom: 1px solid #eee4da; }
+        .back-btn { display: inline-block; margin-top: 20px; text-decoration: none; color: #776e65; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="profile-container">
+        <div class="profile-card">
+            <h1>Bienvenue <span id="username">Joueur123</span> !</h1>
+            <p>Membre depuis le : <span id="join-date">12/02/2024</span></p>
+
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <span class="stat-label">MEILLEUR SCORE</span>
+                    <span class="stat-value" id="high-score">4096</span>
+                </div>
+                <div class="stat-box">
+                    <span class="stat-label">PARTIES JOUÉES</span>
+                    <span class="stat-value" id="games-played">42</span>
+                </div>
+            </div>
+
+            <h3>5 Dernières parties</h3>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody id="history-body">
+                    <tr>
+                        <td>23/02/2024</td>
+                        <td>2048</td>
+                    </tr>
+                    <tr>
+                        <td>22/02/2024</td>
+                        <td>1024</td>
+                    </tr>
+                </tbody>
+            </table>
+            <a href="/" class="back-btn">← Retour au jeu</a>
+        </div>
+    </div>
+    <script src="profile.js"></script>
+</body>
+</html>

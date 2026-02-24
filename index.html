@@ -9,8 +9,11 @@
         <div class="container">
             <header>
                 <div class="account-bar">
-                    <a href="/login" class="auth-btn">Login</a>
-                    <a href="/create-account" class="auth-btn">Create Account</a>
+                    <div class="auth-left">
+                        <a href="/login" id="login-btn" class="auth-btn">Login</a>
+                        <a href="/create-account" id="create-account-btn" class="auth-btn">Create Account</a>
+                    </div>
+                    <a href="/profile" id="profile-btn" class="auth-btn profile-link hidden">Profile</a>
                 </div>
                 <div class="game-header">
                     <h1>2048</h1>
@@ -46,4 +49,5 @@
         </div>
     </body>
     <script src="script.js"></script>
+    <script src="profile.js"></script>
 </html>

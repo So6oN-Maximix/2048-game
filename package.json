@@ -1,0 +1,24 @@
+{
+  "name": "2048",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/So6oN-Maximix/2048-game.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/So6oN-Maximix/2048-game/issues"
+  },
+  "homepage": "https://github.com/So6oN-Maximix/2048-game#readme",
+  "dependencies": {
+    "pg": "^8.18.0"
+  }
+}
