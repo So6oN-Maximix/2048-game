@@ -56,6 +56,33 @@ const server = http.createServer(async (req, res) => {
                 res.end();
             });
             return;
+        } else if (req.method === "POST" && req.url === "/api/save-score") {
+            let body = "";
+            req.on("data", chunk => body += chunk.toString());
+            req.on("end", async () => {
+                const data = JSON.parse(body);
+                const cookieHeader = req.headers.cookie || "";
+                const match = cookieHeader.match(/session_id=([^;]+)/);
+                const ticket = match ? match[1] : null;
+                if (ticket && sessions[ticket]) {
+                    const username = sessions[ticket];
+                    try {
+                        const userIDRequest = await database.query("SELECT user_id FROM users WHERE username = $1", [username]);
+                        const userID = userIDRequest.rows[0].user_id;
+                        await database.query("INSERT INTO scores (user_id, score) VALUES ($1, $2);", [userID, data.score]);
+                        res.writeHead(200);
+                        res.end("Score Enregistré !");
+                    } catch (error) {
+                        console.error("Erreur SQL : ", error);
+                        res.writeHead(500);
+                        res.end();
+                    }
+                } else {
+                    res.writeHead(401);
+                    res.end();
+                }
+            });
+            return;
         }
     } else if (req.method === "GET" && req.url === "/api/user-stats") {
         const cookieHeader = req.headers.cookie || "";
@@ -91,7 +118,7 @@ const server = http.createServer(async (req, res) => {
             } catch (error) {
                 console.error("Erreur API: ", error);
                 res.writeHead(500);
-                res.end;
+                res.end();
             }
         } else {
             res.writeHead(401);

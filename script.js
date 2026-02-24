@@ -26,6 +26,7 @@ function getRandomStart() {
         }
     }
     scoreSpan.textContent = 0;
+    document.getElementById("game-over-screen")?.setAttribute("class", "hidden");
 }
 
 function simplifiedGrid() {
@@ -42,7 +43,7 @@ function simplifiedGrid() {
 function movementRow(keyPressed, simpleGrid) {
     let newGrid = [];
     for (let i = 0; i < 4; i++) {
-        let row = simpleGrid[i]; // On prend la ligne
+        let row = simpleGrid[i];
         if (keyPressed === "ArrowRight") {
             row.reverse();
         }
@@ -95,16 +96,15 @@ function movementColumn(keyPressed, simpleGrid) {
 }
 
 function generateRandom() {
-    let rndRow = Math.floor(Math.random()*4);
-    let rndCol = Math.floor(Math.random()*4);
-    const simplegrid = simplifiedGrid();
-    while (simplegrid[rndRow][rndCol] != 0) {
-        rndRow = Math.floor(Math.random()*4);
-        rndCol = Math.floor(Math.random()*4);
-    }
+    const availableIndex = [];
+    grid.forEach((tile, index) => {
+        if (tile.textContent === "") availableIndex.push(index);
+    });
+    if (availableIndex.length === 0) return;
+    const randomIndex = availableIndex[Math.floor(Math.random()*availableIndex.length)]
     const nb = Math.random() > 0.1 ? 2 : 4;
-    grid[4*rndRow+rndCol].setAttribute("class", `tile tile-${nb}`);
-    grid[4*rndRow+rndCol].textContent = nb;
+    grid[randomIndex].setAttribute("class", `tile tile-${nb}`);
+    grid[randomIndex].textContent = nb;
 }
 
 function movementGestion(keyPressed) {
@@ -130,5 +130,69 @@ function movementGestion(keyPressed) {
     return grid;
 }
 
+function movementIsPossible(keyPressed) {
+    let simpleGrid = simplifiedGrid();
+    if (keyPressed == "ArrowDown") simpleGrid = transpose(simpleGrid);
+    if (keyPressed == "ArrowLeft") {
+        for (let i=0; i<=3; i++) {
+            simpleGrid[i] = simpleGrid[i].reverse();
+        }
+    }
+    if (keyPressed == "ArrowUp") {
+        simpleGrid = transpose(simpleGrid);
+        for (let i=0; i<=3; i++) {
+            simpleGrid[i] = simpleGrid[i].reverse();
+        }
+    }
+    for (const row of simpleGrid) {
+        const indicesOfVoid = [];
+        row.forEach((element, index) => {
+            if (element === 0) indicesOfVoid.push(index);
+        });
+        for (let i=0; i<=indicesOfVoid.length-1; i++) {
+            console.log(indicesOfVoid[i], i);
+            if (indicesOfVoid[i] != i) return true;
+        }
+        for (let i=0; i<row.length-1; i++) {
+            console.log(row);
+            if (row[i] == row[i+1] && row[i] != 0) return true;
+        }
+    }
+    return false;
+}
+
+async function saveScore(finalScore) {
+    await fetch("/api/save-score", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({score: finalScore})
+    });
+}
+
 newGameButton.addEventListener("click", getRandomStart);
-fenetre.addEventListener("keydown", (event) => movementGestion(event.key));
+fenetre.addEventListener("keydown", (event) => {
+    const allMovement = ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"];
+    let possibleMovements = [];
+    for (const move of allMovement) {
+        if (movementIsPossible(move)) {
+            possibleMovements.push(move);
+        }
+    }
+    if (possibleMovements.length > 0 && possibleMovements.includes(event.key)) {
+        movementGestion(event.key);
+        let movesLeft = false;
+        for (const move of allMovement) {
+            if (movementIsPossible(move)) {
+                movesLeft = true;
+                break;
+            }
+        }
+        if (!movesLeft) {
+            saveScore(score);
+            const gameOverScreen = document.getElementById("game-over-screen");
+            gameOverScreen.setAttribute("class", "");
+            const gameOverScore = gameOverScreen.querySelector("span");
+            gameOverScore.textContent = score;
+        }
+    }
+});

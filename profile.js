@@ -40,18 +40,26 @@ async function loadProfileStats() {
             });
             if (lastGamesHistory) lastGamesHistory.innerHTML = historyInnerHTML;
         }
+
+        if (serverResponse.status === 401) {
+            console.log("Deconnexion...");
+            document.cookie = "session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            window.location.reload();
+            return;
+        }
     } catch (error) {
         console.error("Erreur de communication: ", erreur);
     }
 }
 
-function checkAuth() {
+async function checkAuth() {
     const isLogged = document.cookie.includes("session_id=");
     if (isLogged) {
+        await loadProfileStats();
         document.getElementById("login-btn")?.classList.add("hidden");
         document.getElementById("create-account-btn")?.classList.add("hidden");
         document.getElementById("profile-btn")?.classList.remove("hidden");
-        if (window.location.pathname === "/profile") loadProfileStats();
     } else {
         if (window.location.pathname === "/profile") window.location.href = "/login";
     }
