@@ -66,3 +66,10 @@ async function checkAuth() {
 }
 
 document.addEventListener("DOMContentLoaded", checkAuth);
+document.getElementById("logout-btn").addEventListener("click", () => {
+    document.cookie = "session_id=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    document.cookie = "username=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    localStorage.removeItem("2048-grid");
+    localStorage.removeItem("2048-score");
+    window.location.href = "/";
+})

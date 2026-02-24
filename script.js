@@ -27,6 +27,8 @@ function getRandomStart() {
     }
     scoreSpan.textContent = 0;
     document.getElementById("game-over-screen")?.setAttribute("class", "hidden");
+    localStorage.removeItem("2048-grid");
+    localStorage.removeItem("2048-score");
 }
 
 function simplifiedGrid() {
@@ -127,6 +129,7 @@ function movementGestion(keyPressed) {
         }
     }
     generateRandom();
+    saveGameState();
     return grid;
 }
 
@@ -169,6 +172,36 @@ async function saveScore(finalScore) {
     });
 }
 
+function saveGameState() {
+    const simpleGrid = simplifiedGrid();
+    localStorage.setItem("2048-grid", JSON.stringify(simpleGrid));
+    localStorage.setItem("2048-score", score);
+}
+
+function loadGame() {
+    const savedGrid = localStorage.getItem("2048-grid");
+    const savedScore = localStorage.getItem("2048-score");
+    if (savedGrid && savedScore) {
+        const newSimpleGrid = JSON.parse(savedGrid);
+        score = parseInt(savedScore);
+        scoreSpan.textContent = score;
+        for (let i=0; i<=3; i++) {
+            for (let j=0; j<=3; j++) {
+                const value = newSimpleGrid[i][j];
+                if (value == 0) {
+                    grid[4 * i + j].setAttribute("class", "tile empty");
+                    grid[4 * i + j].textContent = "";
+                } else {
+                    grid[4 * i + j].setAttribute("class", `tile tile-${value}`);
+                    grid[4 * i + j].textContent = value;
+                }
+            }
+        }
+    } else {
+        getRandomStart();
+    }
+}
+
 newGameButton.addEventListener("click", getRandomStart);
 fenetre.addEventListener("keydown", (event) => {
     const allMovement = ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"];
@@ -196,3 +229,4 @@ fenetre.addEventListener("keydown", (event) => {
         }
     }
 });
+loadGame();
