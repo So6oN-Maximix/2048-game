@@ -233,3 +233,45 @@ button:active {
 .logout-btn:hover {
     background: #d32f2f;
 }
+
+.main-layout {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 40px;
+    margin-top: 20px;
+}
+
+.ranking-box {
+    background-color: #bbada0;
+    padding: 20px;
+    border-radius: 10px;
+    width: 250px;
+    color: white;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+}
+
+.ranking-box h3 {
+    margin-top: 0;
+    text-align: center;
+    color: #776e65;
+    background: #eee4da; /* Couleur des tuiles claires */
+    padding: 10px;
+    border-radius: 5px;
+    font-size: 18px;
+}
+
+#leaderboard-list {
+    list-style: none;
+    padding: 0;
+    margin-top: 15px;
+}
+
+#leaderboard-list li {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 5px;
+    border-bottom: 1px solid rgba(238, 228, 218, 0.2);
+    font-weight: bold;
+    font-size: 16px;
+}

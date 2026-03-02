@@ -105,24 +105,42 @@ const server = http.createServer(async (req, res) => {
                 const creationAccountDateType = new Date(creationAccountDateString);
                 const creationAccountDate = creationAccountDateType.toLocaleDateString("fr-FR");
 
-                const last5GamesElement = await database.query("SELECT * FROM scores WHERE user_id = $1 ORDER BY created_at DESC LIMIT 5;", [userID]);
-                const last5Games = last5GamesElement.rows;
+                const best5GamesElement = await database.query("SELECT * FROM scores WHERE user_id = $1 ORDER BY score DESC LIMIT 5;", [userID]);
+                const best5Games = best5GamesElement.rows;
                 res.writeHead(200, {"Content-Type": "application/json"});
                 res.end(JSON.stringify({
                     username: username,
                     created: creationAccountDate,
                     bestScore: bestScore,
                     gamesPlayed: gamesNumber,
-                    lastGames: last5Games
+                    bestGames: best5Games
                 }));
             } catch (error) {
-                console.error("Erreur API: ", error);
+                console.error("Erreur API Stats: ", error);
                 res.writeHead(500);
                 res.end();
             }
         } else {
             res.writeHead(401);
             res.end("Non autorisé !");
+        }
+        return;
+    } else if (req.method === "GET" && req.url === "/api/leaderboard") {
+        try {
+            const leaderboardQuery = await database.query(`
+                SELECT username, MAX(score)
+                FROM scores
+                JOIN users ON scores.user_id = users.user_id 
+                GROUP BY username
+                ORDER BY MAX(score) DESC
+                LIMIT 10;
+            `);
+            res.writeHead(200, {"Content-Type": "application/json"});
+            res.end(JSON.stringify(leaderboardQuery.rows));
+        } catch (error) {
+            console.error("Erreur API Leaderboard: ", error);
+            res.writeHead(500);
+            res.end();
         }
         return;
     }

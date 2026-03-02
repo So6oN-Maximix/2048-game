@@ -29,6 +29,7 @@ function getRandomStart() {
     document.getElementById("game-over-screen")?.setAttribute("class", "hidden");
     localStorage.removeItem("2048-grid");
     localStorage.removeItem("2048-score");
+    loadLeaderboard();
 }
 
 function simplifiedGrid() {
@@ -179,6 +180,7 @@ function saveGameState() {
 }
 
 function loadGame() {
+    loadLeaderboard();
     const savedGrid = localStorage.getItem("2048-grid");
     const savedScore = localStorage.getItem("2048-score");
     if (savedGrid && savedScore) {
@@ -199,6 +201,28 @@ function loadGame() {
         }
     } else {
         getRandomStart();
+    }
+}
+
+async function loadLeaderboard() {
+    try {
+        const serverResponse = await fetch("/api/leaderboard");
+        if (serverResponse.ok) {
+            const players = await serverResponse.json();
+            const leaderboardUl = document.getElementById("leaderboard-list");
+            if (!leaderboardUl || !players) return;
+            leaderboardUl.innerHTML = "";
+            players.forEach((player, index) => {
+                const liElement = document.createElement("li");
+                liElement.innerHTML = `
+                    <span>${index + 1}. ${player.username}</span>
+                    <span style="color: #eee4da">${player.max}</span>
+                `;
+                leaderboardUl.appendChild(liElement);
+            });
+        }
+    } catch (error) {
+        console.error("Erreur de communication - Leaderboard: ", erreur);
     }
 }
 

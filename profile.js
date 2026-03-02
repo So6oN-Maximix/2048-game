@@ -24,10 +24,10 @@ async function loadProfileStats() {
             if (gamesPlayedSpan) gamesPlayedSpan.textContent = data.gamesPlayed;
             if (joinDateSpan) joinDateSpan.textContent = data.created;
 
-            const lastGamesHistory = document.getElementById("history-body");
-            const lastGames = data.lastGames;
+            const bestGamesHistory = document.getElementById("history-body");
+            const bestGames = data.bestGames;
             let historyInnerHTML = "";
-            lastGames.forEach((game) => {
+            bestGames.forEach((game) => {
                 const score = game.score;
                 const dateElem = new Date(game.created_at);
                 const date = dateElem.toLocaleDateString("fr-FR");
@@ -38,7 +38,7 @@ async function loadProfileStats() {
                 </tr>
                 `
             });
-            if (lastGamesHistory) lastGamesHistory.innerHTML = historyInnerHTML;
+            if (bestGamesHistory) bestGamesHistory.innerHTML = historyInnerHTML;
         }
 
         if (serverResponse.status === 401) {
@@ -49,7 +49,7 @@ async function loadProfileStats() {
             return;
         }
     } catch (error) {
-        console.error("Erreur de communication: ", erreur);
+        console.error("Erreur de communication - Stats: ", erreur);
     }
 }
 
