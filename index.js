@@ -3,7 +3,7 @@ import fs from "fs";
 import path from "path";
 import database from "./database.js";
 
-const PORT = 8080;
+const PORT = process.env.PORT || 8080;
 const sessions = {};
 
 const server = http.createServer(async (req, res) => {

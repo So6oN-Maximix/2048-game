@@ -1,11 +1,10 @@
 import {Client} from "pg"
 
-const client = new Client ({
-    user: "postgres",
-    host: "localhost",
-    database: "2048_database",
-    password: "LaraCsuge!*",
-    port: 5432
+const client = new Client({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
 });
 
 const createTablesQuery = `
