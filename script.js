@@ -4,6 +4,11 @@ const fenetre = document.querySelector("body");
 const scoreSpan = document.querySelector(".score");
 let score = 0;
 
+let posStartX;
+let posStartY;
+let posEndX;
+let posEndY;
+
 function getRandomStart() {
     const rndRow1 = Math.floor(Math.random() * 4);
     const rndCol1 = Math.floor(Math.random() * 4);
@@ -226,6 +231,28 @@ async function loadLeaderboard() {
     }
 }
 
+function mobileMovement() {
+    const minimalMovement = 20;
+    const distanceMovement = Math.sqrt((posEndX - posStartX)**2 + (posEndY - posStartY)**2);
+    const diffX = posEndX - posStartX;
+    const diffY = posEndY - posStartY;
+    if (distanceMovement > minimalMovement) {
+        if ((Math.abs(diffX) > Math.abs(diffY))) {
+            if (diffX > 0) {
+                if (movementIsPossible("ArrowRight")) movementGestion("ArrowRight");
+            } else {
+                if (movementIsPossible("ArrowLeft")) movementGestion("ArrowLeft");
+            }
+        } else {
+            if (diffY > 0) {
+                if (movementIsPossible("ArrowDown")) movementGestion("ArrowDown");
+            } else {
+                if (movementIsPossible("ArrowUp")) movementGestion("ArrowUp");
+            }
+        }
+    }
+}
+
 newGameButton.addEventListener("click", getRandomStart);
 fenetre.addEventListener("keydown", (event) => {
     const allMovement = ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"];
@@ -253,4 +280,14 @@ fenetre.addEventListener("keydown", (event) => {
         }
     }
 });
+
+fenetre.addEventListener("touchstart", event => {
+    posStartX = event.touches[0].screenX;
+    posStartY = event.touches[0].screenY;
+});
+fenetre.addEventListener("touchend", event => {
+    posEndX = event.touches[0].screenX;
+    posEndY = event.touches[0].screenY;
+});
+
 loadGame();
