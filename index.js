@@ -39,7 +39,7 @@ const server = http.createServer(async (req, res) => {
                 const username = formDatas.get("username");
                 const password = formDatas.get("password");
                 try {
-                    const result = await database.query("SELECT username FROM users WHERE username = $1;", [username]);
+                    const result = await database.query("SELECT * FROM users WHERE username = $1;", [username]);
                     if (result.rows.length > 0) {
                         const user = result.rows[0];
                         const isPasswordCorrect = await bcrypt.compare(password, user.password);
