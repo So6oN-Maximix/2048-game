@@ -31,6 +31,7 @@ function getRandomStart() {
         }
     }
     scoreSpan.textContent = 0;
+    score = 0;
     document.getElementById("game-over-screen")?.setAttribute("class", "hidden");
     localStorage.removeItem("2048-grid");
     localStorage.removeItem("2048-score");
@@ -263,16 +264,15 @@ async function mobileMovement() {
                 };
             }
         }
-    }
-
-    if (moved) {
-        await gameOver();
+        if (moved) {
+            await gameOver();
+        }
     }
 }
 
 async function gameOver() {
     const allMovement = ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"];
-    let movesLeft = true;
+    let movesLeft = false;
     for (const move of allMovement) {
         if (movementIsPossible(move)) {
             movesLeft = true;
@@ -280,9 +280,10 @@ async function gameOver() {
         }
     }
     if (!movesLeft) {
-        await saveScore(score); 
-        await loadLeaderboard(); 
-
+        await saveScore(score);
+        await loadLeaderboard();
+        localStorage.removeItem("2048-grid");
+        localStorage.removeItem("2048-score");
         const gameOverScreen = document.getElementById("game-over-screen");
         gameOverScreen.setAttribute("class", "");
         const gameOverScore = gameOverScreen.querySelector("span");
