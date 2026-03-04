@@ -49,7 +49,8 @@ const server = http.createServer(async (req, res) => {
                             sessions[ticket] = username;
                             res.writeHead(302, {
                                 "Location": "/",
-                                "Set-Cookie": [`session_id=${ticket}; Path=/`, `username=${username}; Path=/`]
+                                "Set-Cookie": [`session_id=${ticket}; Path=/; HttpOnly; Secure; SameSite=Strict`,
+                                                `username=${username}; Path=/; Secure; SameSite=Strict`]
                             });
                         } else {
                             console.log("Échec : Mauvais mot de passe");
