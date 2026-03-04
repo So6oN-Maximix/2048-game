@@ -282,13 +282,16 @@ fenetre.addEventListener("keydown", (event) => {
 });
 
 fenetre.addEventListener("touchstart", event => {
-    posStartX = event.touches[0].screenX;
-    posStartY = event.touches[0].screenY;
+    posStartX = event.changedTouches[0].screenX;
+    posStartY = event.changedTouches[0].screenY;
 }, {passive: false});
 fenetre.addEventListener("touchend", event => {
-    posEndX = event.touches[0].screenX;
-    posEndY = event.touches[0].screenY;
+    posEndX = event.changedTouches[0].screenX;
+    posEndY = event.changedTouches[0].screenY;
     mobileMovement();
+}, {passive: false});
+fenetre.addEventListener("touchmove", event => {
+    event.preventDefault();
 }, {passive: false});
 
 loadGame();
