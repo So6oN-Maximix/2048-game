@@ -13,7 +13,9 @@ const runTest = async () => {
         
         // Petit test de vérification supplémentaire
         const isMatch = await bcrypt.compare(mdp, hashedMdp);
+        const isMatch2 = await bcrypt.compare(mdp, mdp);
         console.log(`VÉRIFICATION : ${isMatch ? "✅ Ça match !" : "❌ Erreur"}`);
+        console.log(`VÉRIFICATION : ${isMatch2 ? "✅ Ça match !" : "❌ Erreur"}`);
     } catch (error) {
         console.error("Erreur :", error);
     }

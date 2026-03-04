@@ -18,8 +18,8 @@ const server = http.createServer(async (req, res) => {
                 const username = formDatas.get("username");
                 const password = formDatas.get("password");
                 try {
-                    const salt = bcrypt.genSalt(10);
-                    const hashedPassword = bcrypt.hash(password, salt);
+                    const salt = await bcrypt.genSalt(10);
+                    const hashedPassword = await bcrypt.hash(password, salt);
                     await database.query("INSERT INTO users (username, password) VALUES ($1, $2);", [username, hashedPassword]);
                     console.log(`Nouveau compte reçu ! Username: ${username}`);
                     res.writeHead(302, {"Location": "/login"});
@@ -42,7 +42,7 @@ const server = http.createServer(async (req, res) => {
                     const result = await database.query("SELECT username FROM users WHERE username = $1;", [username]);
                     if (result.rows.length > 0) {
                         const user = result.rows[0];
-                        const isPasswordCorrect = await bcrypt.match(password, user.password);
+                        const isPasswordCorrect = await bcrypt.compare(password, user.password);
                         if (isPasswordCorrect) {
                             console.log(`Connexion réussi pour ${username}`);
                             const ticket = Math.random().toString(36).substring(7);
