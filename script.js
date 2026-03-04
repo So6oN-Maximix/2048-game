@@ -231,53 +231,71 @@ async function loadLeaderboard() {
     }
 }
 
-function mobileMovement() {
+async function mobileMovement() {
     const minimalMovement = 20;
     const distanceMovement = Math.sqrt((posEndX - posStartX)**2 + (posEndY - posStartY)**2);
     const diffX = posEndX - posStartX;
     const diffY = posEndY - posStartY;
     if (distanceMovement > minimalMovement) {
+        let moved = false;
         if ((Math.abs(diffX) > Math.abs(diffY))) {
             if (diffX > 0) {
-                if (movementIsPossible("ArrowRight")) movementGestion("ArrowRight");
+                if (movementIsPossible("ArrowRight")) {
+                    movementGestion("ArrowRight");
+                    moved = true;
+                };
             } else {
-                if (movementIsPossible("ArrowLeft")) movementGestion("ArrowLeft");
+                if (movementIsPossible("ArrowLeft")) {
+                    movementGestion("ArrowLeft");
+                    moved = true;
+                };
             }
         } else {
             if (diffY > 0) {
-                if (movementIsPossible("ArrowDown")) movementGestion("ArrowDown");
+                if (movementIsPossible("ArrowDown")) {
+                    movementGestion("ArrowDown");
+                    moved = true;
+                };
             } else {
-                if (movementIsPossible("ArrowUp")) movementGestion("ArrowUp");
+                if (movementIsPossible("ArrowUp")) {
+                    movementGestion("ArrowUp");
+                    moved = true;
+                };
             }
         }
+    }
+
+    if (moved) {
+        await gameOver();
+    }
+}
+
+async function gameOver() {
+    const allMovement = ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"];
+    let movesLeft = true;
+    for (const move of allMovement) {
+        if (movementIsPossible(move)) {
+            movesLeft = true;
+            break;
+        }
+    }
+    if (!movesLeft) {
+        await saveScore(score); 
+        await loadLeaderboard(); 
+
+        const gameOverScreen = document.getElementById("game-over-screen");
+        gameOverScreen.setAttribute("class", "");
+        const gameOverScore = gameOverScreen.querySelector("span");
+        gameOverScore.textContent = score;
     }
 }
 
 newGameButton.addEventListener("click", getRandomStart);
-fenetre.addEventListener("keydown", (event) => {
+fenetre.addEventListener("keydown", async (event) => {
     const allMovement = ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"];
-    let possibleMovements = [];
-    for (const move of allMovement) {
-        if (movementIsPossible(move)) {
-            possibleMovements.push(move);
-        }
-    }
     if (possibleMovements.length > 0 && possibleMovements.includes(event.key)) {
         movementGestion(event.key);
-        let movesLeft = false;
-        for (const move of allMovement) {
-            if (movementIsPossible(move)) {
-                movesLeft = true;
-                break;
-            }
-        }
-        if (!movesLeft) {
-            saveScore(score);
-            const gameOverScreen = document.getElementById("game-over-screen");
-            gameOverScreen.setAttribute("class", "");
-            const gameOverScore = gameOverScreen.querySelector("span");
-            gameOverScore.textContent = score;
-        }
+        await gameOver();
     }
 });
 
