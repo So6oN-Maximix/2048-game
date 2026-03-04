@@ -281,14 +281,14 @@ async function gameOver() {
         }
     }
     if (!movesLeft) {
-        await saveScore(score);
-        await loadLeaderboard();
-        localStorage.removeItem("2048-grid");
-        localStorage.removeItem("2048-score");
         const gameOverScreen = document.getElementById("game-over-screen");
         gameOverScreen.setAttribute("class", "");
         const gameOverScore = gameOverScreen.querySelector("span");
         gameOverScore.textContent = score;
+        await saveScore(score);
+        await loadLeaderboard();
+        localStorage.removeItem("2048-grid");
+        localStorage.removeItem("2048-score");
     }
 }
 
