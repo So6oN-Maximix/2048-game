@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/So6oN-Maximix/2048-game#readme",
   "dependencies": {
+    "bcrypt": "^6.0.0",
     "pg": "^8.18.0"
   }
 }

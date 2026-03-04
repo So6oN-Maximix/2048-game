@@ -2,6 +2,7 @@ import http from "http";
 import fs from "fs";
 import path from "path";
 import database from "./database.js";
+import bcrypt from "bcrypt";
 
 const PORT = process.env.PORT || 8080;
 const sessions = {};
@@ -17,7 +18,9 @@ const server = http.createServer(async (req, res) => {
                 const username = formDatas.get("username");
                 const password = formDatas.get("password");
                 try {
-                    await database.query("INSERT INTO users (username, password) VALUES ($1, $2);", [username, password]);
+                    const salt = bcrypt.genSalt(10);
+                    const hashedPassword = bcrypt.hash(password, salt);
+                    await database.query("INSERT INTO users (username, password) VALUES ($1, $2);", [username, hashedPassword]);
                     console.log(`Nouveau compte reçu ! Username: ${username}`);
                     res.writeHead(302, {"Location": "/login"});
                 } catch (error) {
@@ -36,15 +39,22 @@ const server = http.createServer(async (req, res) => {
                 const username = formDatas.get("username");
                 const password = formDatas.get("password");
                 try {
-                    const result = await database.query("SELECT username FROM users WHERE username = $1 AND password = $2;", [username, password]);
+                    const result = await database.query("SELECT username FROM users WHERE username = $1;", [username]);
                     if (result.rows.length > 0) {
-                        console.log(`Connexion réussi pour ${username}`);
-                        const ticket = Math.random().toString(36).substring(7);
-                        sessions[ticket] = username;
-                        res.writeHead(302, {
-                            "Location": "/",
-                            "Set-Cookie": [`session_id=${ticket}; Path=/`, `username=${username}; Path=/`]
-                        });
+                        const user = result.rows[0];
+                        const isPasswordCorrect = await bcrypt.match(password, user.password);
+                        if (isPasswordCorrect) {
+                            console.log(`Connexion réussi pour ${username}`);
+                            const ticket = Math.random().toString(36).substring(7);
+                            sessions[ticket] = username;
+                            res.writeHead(302, {
+                                "Location": "/",
+                                "Set-Cookie": [`session_id=${ticket}; Path=/`, `username=${username}; Path=/`]
+                            });
+                        } else {
+                            console.log("Échec : Mauvais mot de passe");
+                            res.writeHead(302, {"Location": "/login?error=1"});
+                        }
                     } else {
                         console.log(`Echec de connexion ! Mauvais identifiants pour ${username}`);
                         res.writeHead(302, {"Location": "/login"});
