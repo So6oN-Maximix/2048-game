@@ -8,6 +8,7 @@ let posStartX;
 let posStartY;
 let posEndX;
 let posEndY;
+let touchOnGrid;
 
 function getRandomStart() {
     const rndRow1 = Math.floor(Math.random() * 4);
@@ -301,16 +302,24 @@ fenetre.addEventListener("keydown", async (event) => {
 });
 
 fenetre.addEventListener("touchstart", event => {
-    posStartX = event.changedTouches[0].screenX;
-    posStartY = event.changedTouches[0].screenY;
+    if (event.target.closest(".grid-container") || event.target.classList.contains("tile")) {
+        touchOnGrid = true;
+        posStartX = event.changedTouches[0].screenX;
+        posStartY = event.changedTouches[0].screenY;
+    } else {
+        touchOnGrid = false;
+    }
 }, {passive: false});
 fenetre.addEventListener("touchend", event => {
-    posEndX = event.changedTouches[0].screenX;
-    posEndY = event.changedTouches[0].screenY;
-    mobileMovement();
+    if (touchOnGrid) {
+        posEndX = event.changedTouches[0].screenX;
+        posEndY = event.changedTouches[0].screenY;
+        mobileMovement();
+    }
 }, {passive: false});
 fenetre.addEventListener("touchmove", event => {
-    event.preventDefault();
+    if (touchOnGrid) {
+        event.preventDefault();
+    }
 }, {passive: false});
-
 loadGame();
