@@ -54,8 +54,9 @@ async function loadProfileStats() {
 }
 
 async function checkAuth() {
-    const isLogged = document.cookie.includes("session_id=");
-    if (isLogged) {
+    const cookie = document.cookie.split(";");
+    const userCookie = cookie.find(c => c.trim().startsWith('username='));
+    if (userCookie) {
         await loadProfileStats();
         document.getElementById("login-btn")?.classList.add("hidden");
         document.getElementById("create-account-btn")?.classList.add("hidden");
