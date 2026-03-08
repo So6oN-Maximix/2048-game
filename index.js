@@ -4,6 +4,12 @@ import path from "path";
 import database from "./database.js";
 import bcrypt from "bcrypt";
 
+function getCookie(req, name) {
+    const cookieHeader = req.headers.cookie || "";
+    const match = cookieHeader.match(new RegExp(`${name}=([^;]+)`));
+    return match ? match[1] : null;
+}
+
 const PORT = process.env.PORT || 8080;
 const sessions = {};
 
@@ -67,14 +73,12 @@ const server = http.createServer(async (req, res) => {
                 res.end();
             });
             return;
-        } else if (req.method === "POST" && req.url === "/api/save-score") {
+        } else if (req.url === "/api/save-score") {
             let body = "";
             req.on("data", chunk => body += chunk.toString());
             req.on("end", async () => {
                 const data = JSON.parse(body);
-                const cookieHeader = req.headers.cookie || "";
-                const match = cookieHeader.match(/session_id=([^;]+)/);
-                const ticket = match ? match[1] : null;
+                const ticket = getCookie(req, "session_id");
                 if (ticket && sessions[ticket]) {
                     const username = sessions[ticket];
                     try {
@@ -94,11 +98,32 @@ const server = http.createServer(async (req, res) => {
                 }
             });
             return;
+        } else if (req.url === "/api/movement") {
+            let body = "";
+            req.on("data", chunk => body += chunk.toString());
+            req.on("end", async () => {
+                const {direction} = JSON.stringify(body);
+                const ticket = getCookie(req, "session_id");
+                if (ticket && sessions[ticket]) {
+                    let game = sessions[ticket];
+                    console.log(direction);
+
+                    /* CODING SCORE CALCULATION */
+
+                    res.writeHead(200, {"Content-Type": "application.json"});
+                    res.end(JSON.stringify({
+                        grid: game.grid,
+                        score: grid.score
+                    }));
+                } else {
+                    res.writeHead(401);
+                    res.end();
+                }
+            });
+            return;
         }
     } else if (req.method === "GET" && req.url === "/api/user-stats") {
-        const cookieHeader = req.headers.cookie || "";
-        const match = cookieHeader.match(/session_id=([^;]+)/);
-        const ticket = match ? match[1] : null;
+        const ticket = getCookie(req, "session_id");
         if (ticket && sessions[ticket]) {
             const username = sessions[ticket];
             try {
@@ -184,7 +209,11 @@ const server = http.createServer(async (req, res) => {
                 res.end(content404, 'utf-8');
             });
         } else {
-            res.writeHead(200, {"Content-Type": `${contentType}; charset=utf-8`});
+            res.writeHead(200, {
+                "Content-Type": `${contentType}; charset=utf-8`,
+                "X-Content-Type-Options": "nosniff",
+                "X-Frame-Options": "DENY"
+            });
             res.end(content, "utf-8");
         }
     })

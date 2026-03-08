@@ -117,6 +117,19 @@ function generateRandom() {
     grid[randomIndex].textContent = nb;
 }
 
+async function movementGestion2(keyPressed) {
+    const serverResponse = await fetch("/api/movement", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({direction: keyPressed})
+    });
+    if (serverResponse.ok) {
+        const newGameState = await serverResponse.json();
+        score = newGameState.score;
+        scoreSpan.textContent = score;
+    }
+}
+
 function movementGestion(keyPressed) {
     const simpleGrid = simplifiedGrid();
     let simpleNewGrid;
@@ -221,10 +234,13 @@ async function loadLeaderboard() {
             leaderboardUl.innerHTML = "";
             players.forEach((player, index) => {
                 const liElement = document.createElement("li");
-                liElement.innerHTML = `
-                    <span>${index + 1}. ${player.username}</span>
-                    <span style="color: #eee4da">${player.max}</span>
-                `;
+                const usernameSpan = document.createElement("span");
+                const scoreSpan = document.createElement("span");
+                usernameSpan.textContent = `${index + 1}. ${player.username}`;
+                scoreSpan.textContent = `${player.max}`;
+                scoreSpan.style.color = "#eee4da";
+                liElement.appendChild(usernameSpan);
+                liElement.appendChild(scoreSpan);
                 leaderboardUl.appendChild(liElement);
             });
         }
