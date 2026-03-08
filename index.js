@@ -35,13 +35,13 @@ function movementRow(keyPressed, simpleGrid) {
         }
         newGrid.push(rowFiltered);
     }
-    return {grid: newGrid, addScore: addingScore};
+    return {grid: newGrid, addingScore: addingScore};
 }
 
 function transpose(grille) {
     let toChange;
     for (let i=0; i<=3; i++) {
-        for (j=0; j<=3; j++) {
+        for (let j=0; j<=3; j++) {
             if (i < j) {
                 toChange = grille[i][j]
                 grille[i][j] = grille[j][i];
@@ -55,13 +55,13 @@ function transpose(grille) {
 function movementColumn(keyPressed, simpleGrid) {
     let newGrid;
     const simpleGridTranspose = transpose(simpleGrid);
+    let result;
     if (keyPressed == "ArrowDown") {
-        const {newGridTranspose, addingScore} = movementRow("ArrowRight", simpleGridTranspose);
+        result = movementRow("ArrowRight", simpleGridTranspose);
     } else if (keyPressed == "ArrowUp") {
-        const {newGridTranspose, addingScore} = movementRow("ArrowLeft", simpleGridTranspose);
+        result = movementRow("ArrowLeft", simpleGridTranspose);
     }
-    newGrid = transpose(newGridTranspose);
-    return {grid: newGrid, addingScore: addingScore};
+    return {grid: transpose(result.grid), addingScore: result.addingScore};
 }
 
 const PORT = process.env.PORT || 8080;
@@ -106,7 +106,11 @@ const server = http.createServer(async (req, res) => {
                         if (isPasswordCorrect) {
                             console.log(`Connexion réussi pour ${username}`);
                             const ticket = Math.random().toString(36).substring(7);
-                            sessions[ticket] = username;
+                            sessions[ticket] = {
+                                username: username,
+                                score: 0,
+                                grid: [[0,0,0,0], [0,0,0,0], [0,0,0,0], [0,0,0,0]]
+                            };
                             res.writeHead(302, {
                                 "Location": "/",
                                 "Set-Cookie": [`session_id=${ticket}; Path=/; HttpOnly; Secure; SameSite=Strict`,
@@ -156,7 +160,7 @@ const server = http.createServer(async (req, res) => {
             let body = "";
             req.on("data", chunk => body += chunk.toString());
             req.on("end", async () => {
-                const {direction} = JSON.stringify(body);
+                const {direction} = JSON.parse(body);
                 const ticket = getCookie(req, "session_id");
                 if (ticket && sessions[ticket]) {
                     let game = sessions[ticket];
