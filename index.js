@@ -10,6 +10,60 @@ function getCookie(req, name) {
     return match ? match[1] : null;
 }
 
+function movementRow(keyPressed, simpleGrid) {
+    let newGrid = [];
+    let addingScore = 0;
+    for (let i = 0; i < 4; i++) {
+        let row = simpleGrid[i];
+        if (keyPressed === "ArrowRight") {
+            row.reverse();
+        }
+        let rowFiltered = row.filter(num => num > 0);
+        for (let j = 0; j < rowFiltered.length - 1; j++) {
+            if (rowFiltered[j] === rowFiltered[j+1]) {
+                rowFiltered[j] *= 2;
+                addingScore += rowFiltered[j];
+                rowFiltered[j+1] = 0;
+            }
+        }
+        rowFiltered = rowFiltered.filter(num => num > 0);
+        while (rowFiltered.length < 4) {
+            rowFiltered.push(0);
+        }
+        if (keyPressed === "ArrowRight") {
+            rowFiltered.reverse();
+        }
+        newGrid.push(rowFiltered);
+    }
+    return {grid: newGrid, addScore: addingScore};
+}
+
+function transpose(grille) {
+    let toChange;
+    for (let i=0; i<=3; i++) {
+        for (j=0; j<=3; j++) {
+            if (i < j) {
+                toChange = grille[i][j]
+                grille[i][j] = grille[j][i];
+                grille[j][i] = toChange;
+            }
+        }
+    }
+    return grille;
+}
+
+function movementColumn(keyPressed, simpleGrid) {
+    let newGrid;
+    const simpleGridTranspose = transpose(simpleGrid);
+    if (keyPressed == "ArrowDown") {
+        const {newGridTranspose, addingScore} = movementRow("ArrowRight", simpleGridTranspose);
+    } else if (keyPressed == "ArrowUp") {
+        const {newGridTranspose, addingScore} = movementRow("ArrowLeft", simpleGridTranspose);
+    }
+    newGrid = transpose(newGridTranspose);
+    return {grid: newGrid, addingScore: addingScore};
+}
+
 const PORT = process.env.PORT || 8080;
 const sessions = {};
 
@@ -106,14 +160,15 @@ const server = http.createServer(async (req, res) => {
                 const ticket = getCookie(req, "session_id");
                 if (ticket && sessions[ticket]) {
                     let game = sessions[ticket];
-                    console.log(direction);
-
-                    /* CODING SCORE CALCULATION */
-
+                    if (keyPressed == "ArrowRight" || keyPressed == "ArrowLeft") {
+                        const {simpleNewGrid, addingScore} = movementRow(keyPressed, game.grid);
+                    } else if (keyPressed == "ArrowUp" || keyPressed == "ArrowDown") {
+                        const {simpleNewGrid, addingScore} = movementColumn(keyPressed, game.grid);
+                    }
                     res.writeHead(200, {"Content-Type": "application.json"});
                     res.end(JSON.stringify({
-                        grid: game.grid,
-                        score: grid.score
+                        grid: simpleNewGrid,
+                        score: game.score + addingScore
                     }));
                 } else {
                     res.writeHead(401);
