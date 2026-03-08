@@ -117,7 +117,7 @@ function generateRandom() {
     grid[randomIndex].textContent = nb;
 }
 
-async function movementGestion2(keyPressed) {
+async function movementGestion(keyPressed) {
     const serverResponse = await fetch("/api/movement", {
         method: "POST",
         headers: {"Content-Type": "application/json"},
@@ -130,7 +130,7 @@ async function movementGestion2(keyPressed) {
     }
 }
 
-function movementGestion(keyPressed) {
+function movementGestion2(keyPressed) {
     const simpleGrid = simplifiedGrid();
     let simpleNewGrid;
     if (keyPressed == "ArrowRight" || keyPressed == "ArrowLeft") {
