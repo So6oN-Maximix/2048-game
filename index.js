@@ -138,7 +138,7 @@ const server = http.createServer(async (req, res) => {
                 const data = JSON.parse(body);
                 const ticket = getCookie(req, "session_id");
                 if (ticket && sessions[ticket]) {
-                    const username = sessions[ticket];
+                    const username = sessions[ticket].username;
                     try {
                         const userIDRequest = await database.query("SELECT user_id FROM users WHERE username = $1", [username]);
                         const userID = userIDRequest.rows[0].user_id;
@@ -164,15 +164,18 @@ const server = http.createServer(async (req, res) => {
                 const ticket = getCookie(req, "session_id");
                 if (ticket && sessions[ticket]) {
                     let game = sessions[ticket];
+                    let result;
                     if (keyPressed == "ArrowRight" || keyPressed == "ArrowLeft") {
-                        const {simpleNewGrid, addingScore} = movementRow(keyPressed, game.grid);
+                        result = movementRow(keyPressed, game.grid);
                     } else if (keyPressed == "ArrowUp" || keyPressed == "ArrowDown") {
-                        const {simpleNewGrid, addingScore} = movementColumn(keyPressed, game.grid);
+                        result = movementColumn(keyPressed, game.grid);
                     }
+                    game.grid = result.grid;
+                    game.score += result.addingScore;
                     res.writeHead(200, {"Content-Type": "application.json"});
                     res.end(JSON.stringify({
-                        grid: simpleNewGrid,
-                        score: game.score + addingScore
+                        grid: game.grid,
+                        score: game.score
                     }));
                 } else {
                     res.writeHead(401);
@@ -184,7 +187,7 @@ const server = http.createServer(async (req, res) => {
     } else if (req.method === "GET" && req.url === "/api/user-stats") {
         const ticket = getCookie(req, "session_id");
         if (ticket && sessions[ticket]) {
-            const username = sessions[ticket];
+            const username = sessions[ticket].username;
             try {
                 const userIDElement = await database.query("SELECT user_id FROM users WHERE username = $1;", [username]);
                 const userID = userIDElement.rows[0].user_id;

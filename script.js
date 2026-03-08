@@ -127,6 +127,21 @@ async function movementGestion(keyPressed) {
         const newGameState = await serverResponse.json();
         score = newGameState.score;
         scoreSpan.textContent = score;
+        const newGrid = newGameState.grid;
+        for (let i = 0; i < 4; i++) {
+            for (let j = 0; j < 4; j++) {
+                const value = newGrid[i][j];
+                const tileElement = grid[i * 4 + j];
+                if (value == 0) {
+                    tileElement.setAttribute("class", "tile empty");
+                    tileElement.textContent = "";
+                } else {
+                    tileElement.setAttribute("class", `tile tile-${value}`);
+                    tileElement.textContent = value;
+                }
+            }
+        }
+        saveGameState();
     }
 }
 
