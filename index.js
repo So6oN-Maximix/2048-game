@@ -53,7 +53,6 @@ function transpose(grille) {
 }
 
 function movementColumn(keyPressed, simpleGrid) {
-    let newGrid;
     const simpleGridTranspose = transpose(simpleGrid);
     let result;
     if (keyPressed == "ArrowDown") {
@@ -165,10 +164,10 @@ const server = http.createServer(async (req, res) => {
                 if (ticket && sessions[ticket]) {
                     let game = sessions[ticket];
                     let result;
-                    if (keyPressed == "ArrowRight" || keyPressed == "ArrowLeft") {
-                        result = movementRow(keyPressed, game.grid);
-                    } else if (keyPressed == "ArrowUp" || keyPressed == "ArrowDown") {
-                        result = movementColumn(keyPressed, game.grid);
+                    if (direction == "ArrowRight" || direction == "ArrowLeft") {
+                        result = movementRow(direction, game.grid);
+                    } else if (direction == "ArrowUp" || direction == "ArrowDown") {
+                        result = movementColumn(direction, game.grid);
                     }
                     game.grid = result.grid;
                     game.score += result.addingScore;
