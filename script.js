@@ -327,7 +327,7 @@ newGameButton.addEventListener("click", getRandomStart);
 fenetre.addEventListener("keydown", async (event) => {
     const allMovement = ["ArrowRight", "ArrowLeft", "ArrowUp", "ArrowDown"];
     if (allMovement.includes(event.key) && movementIsPossible(event.key)) {
-        movementGestion(event.key);
+        movementGestion2(event.key);
         await gameOver();
     }
 });
